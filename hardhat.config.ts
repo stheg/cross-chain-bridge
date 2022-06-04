@@ -9,8 +9,7 @@ import "solidity-coverage";
 import "tsconfig-paths/register";
 
 import "./tasks/default";
-
-//UNCOMMENT AFTER COMPILATION:
+import "./tasks/tasks";
 
 
 export default {

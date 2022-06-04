@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "hardhat/console.sol";
 
 contract MABridge is AccessControl {
     using ECDSA for bytes32;

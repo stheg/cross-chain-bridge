@@ -1,6 +1,7 @@
 import { task } from "hardhat/config";
 
 task("swap", "Initializes swap procedure and burns tokens")
+    .addParam("contract", "Address of the bridge token")
     .addParam("token1", "Address of the first token (which will be burnt in current)")
     .addParam("token2", "Address of the second token (which will be minted in another chain)")
     .addParam("amount", "Amount to burn and mint")
@@ -27,6 +28,7 @@ task("swap", "Initializes swap procedure and burns tokens")
     });
 
 task("redeem", "Finishes swap procedure and mints tokens")
+    .addParam("contract", "Address of the bridge token")
     .addParam("token1", "Address of the first token (which will be burnt in current)")
     .addParam("token2", "Address of the second token (which will be minted in another chain)")
     .addParam("amount", "Amount to burn and mint")
@@ -54,10 +56,12 @@ task("redeem", "Finishes swap procedure and mints tokens")
     });
 
 task("set-validator", "Inits a new validator to verify signature")
+    .addParam("contract", "Address of the bridge token")
+    .addOptionalParam("validator", "Address of the validator")
     .setAction(async (args, hre) => {
-        const [owner, user1, user2] = await hre.ethers.getSigners();
+        const [owner] = await hre.ethers.getSigners();
         const contract =
             await hre.ethers.getContractAt("MABridge", args.contract, owner);
 
-        contract.setValidator(owner.address);
+        await contract.setValidator(args.validator ?? owner.address);
     });
