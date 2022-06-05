@@ -20,10 +20,14 @@ contract MABridge is AccessControl {
     );
 
     address private _validator;
+    address private _tokenFrom;
+    address private _tokenTo;
     mapping(uint256 => bool) private _handled;
 
-    constructor() {
+    constructor(address tokenFrom, address tokenTo) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _tokenFrom = tokenFrom;
+        _tokenTo = tokenTo;
     }
 
     function setValidator(address validator)
@@ -34,21 +38,19 @@ contract MABridge is AccessControl {
     }
 
     function swap(
-        address tokenFrom,
         uint64 amount,
         address to,
-        address tokenTo,
         uint256 toChainId
     ) external {
-        ERC20PresetMinterPauser(tokenFrom).burnFrom(msg.sender, amount);
+        ERC20PresetMinterPauser(_tokenFrom).burnFrom(msg.sender, amount);
 
         emit SwapInitialized(
             msg.sender,
-            tokenFrom,
+            _tokenFrom,
             block.chainid,
             amount,
             to,
-            tokenTo,
+            _tokenTo,
             toChainId
         );
     }
@@ -56,18 +58,16 @@ contract MABridge is AccessControl {
     function redeem(
         uint64 nonce,
         address from,
-        address tokenFrom,
         uint256 fromChainId,
         uint64 amount,
-        address tokenTo,
         bytes memory signature
     ) external {
         bytes32 msgHash = keccak256(
             abi.encode(
                 nonce,
-                from, tokenFrom, fromChainId,
+                from, _tokenFrom, fromChainId,
                 amount,
-                msg.sender, tokenTo, block.chainid
+                msg.sender, _tokenTo, block.chainid
             )
         );
 
@@ -84,6 +84,6 @@ contract MABridge is AccessControl {
         );
         _handled[key] = true;
         
-        ERC20PresetMinterPauser(tokenTo).mint(msg.sender, amount);
+        ERC20PresetMinterPauser(_tokenTo).mint(msg.sender, amount);
     }
 }

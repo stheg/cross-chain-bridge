@@ -37,7 +37,7 @@ describe("MA Bridge", () => {
 
 
         const f = await ethers.getContractFactory("MABridge", validator);
-        contract = <MABridge>await f.deploy();
+        contract = <MABridge>await f.deploy(tokenFrom.address, tokenTo.address);
 
         await contract.deployed();
 
@@ -54,8 +54,7 @@ describe("MA Bridge", () => {
             await tokenFrom.connect(user1).approve(contract.address, amount);
 
             await contract.connect(user1).swap(
-                tokenFrom.address, amount,
-                user2.address, tokenTo.address, network.config.chainId ?? 0
+                amount, user2.address, network.config.chainId ?? 0
             );
 
             const after = await tokenFrom.connect(user1).balanceOf(user1.address);
@@ -68,8 +67,7 @@ describe("MA Bridge", () => {
             await tokenFrom.connect(user1).approve(contract.address, amount);
 
             const tx = contract.connect(user1).swap(
-                tokenFrom.address, amount,
-                user2.address, tokenTo.address, network.config.chainId ?? 0
+                amount, user2.address, network.config.chainId ?? 0
             );
 
             await expect(tx).to.emit(contract, "SwapInitialized")
@@ -92,8 +90,8 @@ describe("MA Bridge", () => {
 
             await contract.connect(user2).redeem(
                 nonce,
-                user1.address, tokenFrom.address, network.config.chainId ?? 0,
-                amount, tokenTo.address,
+                user1.address, network.config.chainId ?? 0,
+                amount,
                 ethers.utils.arrayify(signature)
             );
 
@@ -113,8 +111,8 @@ describe("MA Bridge", () => {
 
             const tx = contract.connect(user2).redeem(
                 nonce,
-                user1.address, tokenFrom.address, network.config.chainId ?? 0,
-                amount, tokenTo.address,
+                user1.address, network.config.chainId ?? 0,
+                amount,
                 ethers.utils.arrayify(signature)
             );
             await expect(tx).to.be.revertedWith("MABridge: wrong signature");
@@ -130,8 +128,8 @@ describe("MA Bridge", () => {
 
             const tx = contract.connect(user2).redeem(
                 nonce,
-                user1.address, tokenFrom.address, network.config.chainId ?? 0,
-                amount, tokenTo.address,
+                user1.address, network.config.chainId ?? 0,
+                amount,
                 ethers.utils.arrayify(signature)
             );
             await expect(tx).to.be.revertedWith("MABridge: wrong signature");
@@ -147,15 +145,15 @@ describe("MA Bridge", () => {
 
             await contract.connect(user2).redeem(
                 nonce,
-                user1.address, tokenFrom.address, network.config.chainId ?? 0,
-                amount, tokenTo.address,
+                user1.address, network.config.chainId ?? 0,
+                amount, 
                 ethers.utils.arrayify(signature)
             );
 
             const tx = contract.connect(user2).redeem(
                 nonce,
-                user1.address, tokenFrom.address, network.config.chainId ?? 0,
-                amount, tokenTo.address,
+                user1.address, network.config.chainId ?? 0,
+                amount,
                 ethers.utils.arrayify(signature)
             );
 
